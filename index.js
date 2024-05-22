@@ -31,29 +31,29 @@ var listener = app.listen(process.env.PORT || 3000, function () {
 });
 
 
-// Solucion
-
-app.get("/api/:date_string?", (req, res) => {
-  let date_string = req.params.date_string;
+// Solution
+app.get("/api/:input?", (req, res) => {
+  let input = req.params.input;
   let date;
 
-  // Si 'date_string' está vacío, usa la fecha y hora actual
-  if(!date_string) {
+  // If 'input' is empty or not provided, use the current date and time
+  if (!input) {
     date = new Date();
-  } else if(date_string.includes('-')) {
-    // Cadena de fecha
-    date = new Date(date_string);
+  } else if (isNaN(input)) {
+    // Date string
+    date = new Date(input);
   } else {
-    // Marca de tiempo Unix
-    let timestamp = parseInt(date_string);
-    // Verifica si el número es válido
-    if(!isNaN(timestamp)) {
-      date = new Date(timestamp);
+    // Unix timestamp
+    let timestamp = parseInt(input);
+    // Convert seconds to milliseconds if necessary
+    if (timestamp.toString().length === 10) {
+      timestamp *= 1000;
     }
+    date = new Date(timestamp);
   }
 
-  // Verifica si la fecha es válida
-  if(date instanceof Date && !isNaN(date)) {
+  // Check if the date is valid
+  if (date.toString() !== "Invalid Date") {
     res.json({ "unix": date.getTime(), "utc": date.toUTCString() });
   } else {
     res.json({ "error": "Invalid Date" });
